@@ -20,6 +20,7 @@ func NewRedisTicketRepository(connection *redis.Client) ticket.Repository {
 	}
 }
 
+// Create creates a ticket.
 func (r *ticketRepository) Create(ticket *ticket.Ticket) error {
 	encoded, err := json.Marshal(ticket)
 
@@ -31,7 +32,8 @@ func (r *ticketRepository) Create(ticket *ticket.Ticket) error {
 	return nil
 }
 
-func (r *ticketRepository) FindById(id string) (*ticket.Ticket, error) {
+// FindByID method returns the ticket with id passed as argument.
+func (r *ticketRepository) FindByID(id string) (*ticket.Ticket, error) {
 	b, err := r.connection.HGet(table, id).Bytes()
 
 	if err != nil {
@@ -48,6 +50,7 @@ func (r *ticketRepository) FindById(id string) (*ticket.Ticket, error) {
 	return t, nil
 }
 
+// FindAll method returns all tickets present in the redis repository.
 func (r *ticketRepository) FindAll() (tickets []*ticket.Ticket, err error) {
 	ts := r.connection.HGetAll(table).Val()
 	for key, value := range ts {

@@ -22,8 +22,8 @@ func (s *service) CreateTicket(ticket *Ticket) error {
 	return s.repo.Create(ticket)
 }
 
-func (s *service) FindTicketById(id string) (*Ticket, error) {
-	return s.repo.FindById(id)
+func (s *service) FindTicketByID(id string) (*Ticket, error) {
+	return s.repo.FindByID(id)
 }
 
 func (s *service) FindAllTickets() ([]*Ticket, error) {

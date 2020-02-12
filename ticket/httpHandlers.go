@@ -25,10 +25,10 @@ func (h *handler) Get(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(response)
 }
 
-func (h *handler) GetById(w http.ResponseWriter, r *http.Request) {
+func (h *handler) GetByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-	ticket, _ := h.ticketService.FindTicketById(id)
+	ticket, _ := h.ticketService.FindTicketByID(id)
 
 	response, _ := json.Marshal(ticket)
 

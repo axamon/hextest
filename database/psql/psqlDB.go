@@ -28,8 +28,8 @@ func (r *ticketRepository) Create(ticket *ticket.Ticket) error {
 	return nil
 }
 
-// FindById method returns the ticket with id passed as argument.
-func (r *ticketRepository) FindById(id string) (*ticket.Ticket, error) {
+// FindByID method returns the ticket with id passed as argument.
+func (r *ticketRepository) FindByID(id string) (*ticket.Ticket, error) {
 	ticket := new(ticket.Ticket)
 	err := r.db.QueryRow("SELECT id, creator, assigned, title, description, status, points, created, updated FROM tickets where id=$1", id).Scan(&ticket.ID, &ticket.Creator, &ticket.Assigned, &ticket.Title, &ticket.Description, &ticket.Status, &ticket.Points, &ticket.Created, &ticket.Updated)
 	if err != nil {
