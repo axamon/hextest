@@ -47,6 +47,7 @@ func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/tickets", ticketHandler.GetAll).Methods("GET")
 	router.HandleFunc("/tickets/{id}", ticketHandler.GetByID).Methods("GET")
+	router.HandleFunc("/tickets/delete/{id}", ticketHandler.DeleteByID).Methods("GET")
 	router.HandleFunc("/tickets", ticketHandler.Create).Methods("POST")
 
 	http.Handle("/", accessControl(router))

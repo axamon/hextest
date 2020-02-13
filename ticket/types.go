@@ -22,12 +22,15 @@ type Ticket struct {
 // Repository is thte inferface to contact to interact with the core.
 type Repository interface {
 	Create(ticket *Ticket) error
+	DeleteByID(id string) error
 	FindByID(id string) (*Ticket, error)
 	FindAll() ([]*Ticket, error)
 }
 
+// Service ...
 type Service interface {
 	CreateTicket(ticket *Ticket) (string, error)
+	DeleteTicketByID(id string) error
 	FindTicketByID(id string) (*Ticket, error)
 	FindAllTickets() ([]*Ticket, error)
 }
@@ -38,6 +41,7 @@ type service struct {
 
 type Handler interface {
 	GetAll(w http.ResponseWriter, r *http.Request)
+	DeleteByID(w http.ResponseWriter, r *http.Request)
 	GetByID(w http.ResponseWriter, r *http.Request)
 	Create(w http.ResponseWriter, r *http.Request)
 }

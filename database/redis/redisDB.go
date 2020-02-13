@@ -32,6 +32,13 @@ func (r *ticketRepository) Create(ticket *ticket.Ticket) error {
 	return nil
 }
 
+// DeleteByID method returns the ticket with id passed as argument.
+func (r *ticketRepository) DeleteByID(id string) error {
+	_ = r.connection.HDel(table, id)
+
+	return nil
+}
+
 // FindByID method returns the ticket with id passed as argument.
 func (r *ticketRepository) FindByID(id string) (*ticket.Ticket, error) {
 	b, err := r.connection.HGet(table, id).Bytes()

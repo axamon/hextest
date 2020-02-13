@@ -27,6 +27,12 @@ func (s *service) CreateTicket(ticket *Ticket) (string, error) {
 	return ticket.ID, nil
 }
 
+// DeleteTicketByID method deletes ticket with id passed as argument
+// from the repository.
+func (s *service) DeleteTicketByID(id string) error {
+	return s.repo.DeleteByID(id)
+}
+
 // FindTicketByID method returns ticket with id passed as argument
 // from the repository.
 func (s *service) FindTicketByID(id string) (*Ticket, error) {

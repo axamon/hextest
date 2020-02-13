@@ -26,7 +26,22 @@ func (h *handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(response)
 }
 
-// GetByID method returns one ticket by id via  http.
+// DeleteByID method deletes one ticket by id via http.
+func (h *handler) DeleteByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	err := h.ticketService.DeleteTicketByID(id)
+
+	if err != nil {
+		panic(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("Deleted ticket with id: " + id))
+}
+
+// GetByID method returns one ticket by id via http.
 func (h *handler) GetByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
