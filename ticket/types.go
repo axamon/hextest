@@ -27,7 +27,7 @@ type Repository interface {
 	FindAll() ([]*Ticket, error)
 }
 
-// Service ...
+// Service are the business rules logic.
 type Service interface {
 	CreateTicket(ticket *Ticket) (string, error)
 	DeleteTicketByID(id string) error
@@ -39,6 +39,8 @@ type service struct {
 	repo Repository
 }
 
+// Handler interface is the way to deal with the repository
+// via http routes.
 type Handler interface {
 	GetAll(w http.ResponseWriter, r *http.Request)
 	DeleteByID(w http.ResponseWriter, r *http.Request)
