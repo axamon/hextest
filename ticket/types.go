@@ -27,7 +27,7 @@ type Repository interface {
 }
 
 type Service interface {
-	CreateTicket(ticket *Ticket) error
+	CreateTicket(ticket *Ticket) (string, error)
 	FindTicketByID(id string) (*Ticket, error)
 	FindAllTickets() ([]*Ticket, error)
 }
@@ -37,7 +37,7 @@ type service struct {
 }
 
 type Handler interface {
-	Get(w http.ResponseWriter, r *http.Request)
+	GetAll(w http.ResponseWriter, r *http.Request)
 	GetByID(w http.ResponseWriter, r *http.Request)
 	Create(w http.ResponseWriter, r *http.Request)
 }

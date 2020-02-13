@@ -20,7 +20,7 @@ func NewRedisTicketRepository(connection *redis.Client) ticket.Repository {
 	}
 }
 
-// Create creates a ticket.
+// Create creates a ticket in the repository.
 func (r *ticketRepository) Create(ticket *ticket.Ticket) error {
 	encoded, err := json.Marshal(ticket)
 
@@ -28,7 +28,7 @@ func (r *ticketRepository) Create(ticket *ticket.Ticket) error {
 		return err
 	}
 
-	r.connection.HSet(table, ticket.ID, encoded) //Don't expire
+	r.connection.HSet(table, ticket.ID, encoded) // Does not expire
 	return nil
 }
 

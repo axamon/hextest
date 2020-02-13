@@ -38,6 +38,7 @@ func (r *ticketRepository) FindByID(id string) (*ticket.Ticket, error) {
 	return ticket, nil
 }
 
+// FindAll method returns all tickets from the psql database repository.
 func (r *ticketRepository) FindAll() (tickets []*ticket.Ticket, err error) {
 	rows, err := r.db.Query("SELECT id, creator, assigned, title, description, status, points, created, updated FROM tickets")
 	defer rows.Close()

@@ -2,6 +2,7 @@ package ticket
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -14,8 +15,8 @@ func NewTicketHandler(ticketService Service) Handler {
 	}
 }
 
-// Get handles requests of tickets via http.
-func (h *handler) Get(w http.ResponseWriter, r *http.Request) {
+// GetAll method returns all tickets via http.
+func (h *handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	tickets, _ := h.ticketService.FindAllTickets()
 
 	response, _ := json.Marshal(tickets)
@@ -25,6 +26,7 @@ func (h *handler) Get(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(response)
 }
 
+// GetByID method returns one ticket by id via  http.
 func (h *handler) GetByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
@@ -37,15 +39,17 @@ func (h *handler) GetByID(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(response)
 }
 
+// Create method creates a new ticket in the repository.
 func (h *handler) Create(w http.ResponseWriter, r *http.Request) {
 	var ticket Ticket
 	decoder := json.NewDecoder(r.Body)
 	_ = decoder.Decode(&ticket)
-	_ = h.ticketService.CreateTicket(&ticket)
+	id, _ := h.ticketService.CreateTicket(&ticket)
 
 	response, _ := json.Marshal(ticket)
 	w.Header().Set("Content-Type", "application/json")
+	doneOk := fmt.Sprintf("Created ticket with id: %s\n", id)
+	w.Write([]byte(doneOk))
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(response)
-
 }

@@ -45,7 +45,7 @@ func main() {
 		HTTP ROUTES
 	*/
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/tickets", ticketHandler.Get).Methods("GET")
+	router.HandleFunc("/tickets", ticketHandler.GetAll).Methods("GET")
 	router.HandleFunc("/tickets/{id}", ticketHandler.GetByID).Methods("GET")
 	router.HandleFunc("/tickets", ticketHandler.Create).Methods("POST")
 

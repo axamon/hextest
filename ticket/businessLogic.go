@@ -1,6 +1,8 @@
+// Package ticket creates tickets in repository.
 package ticket
 
 import (
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,18 +16,24 @@ func NewService(repo Repository) Service {
 }
 
 // CreateTicket creates a new Ticket.
-func (s *service) CreateTicket(ticket *Ticket) error {
+func (s *service) CreateTicket(ticket *Ticket) (string, error) {
 	ticket.ID = uuid.New().String()
 	ticket.Created = time.Now()
 	ticket.Updated = time.Now()
 	ticket.Status = "open"
-	return s.repo.Create(ticket)
+	if s.repo.Create(ticket) != nil {
+		return "", errors.New("ticket creation impossible")
+	}
+	return ticket.ID, nil
 }
 
+// FindTicketByID method returns ticket with id passed as argument
+// from the repository.
 func (s *service) FindTicketByID(id string) (*Ticket, error) {
 	return s.repo.FindByID(id)
 }
 
+// FindAllTickets method returns all tickets in the repository.
 func (s *service) FindAllTickets() ([]*Ticket, error) {
 	return s.repo.FindAll()
 }
