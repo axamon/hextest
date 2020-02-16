@@ -8,6 +8,7 @@ import (
 	"github.com/go-redis/redis"
 )
 
+// redisConnection configures the connection to redis.
 func redisConnection(url string) *redis.Client {
 	fmt.Println("Connecting to Redis DB")
 	client := redis.NewClient(&redis.Options{
@@ -23,6 +24,7 @@ func redisConnection(url string) *redis.Client {
 	return client
 }
 
+// postgresConnection configures the connection to postgres.
 func postgresConnection(database string) *sql.DB {
 	fmt.Println("Connecting to PostgreSQL DB")
 	db, err := sql.Open("postgres", database)

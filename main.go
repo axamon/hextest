@@ -19,19 +19,22 @@ func main() {
 
 	// dbType is a flag used to choose which backend database to use.
 	dbType := flag.String("database", "redis", "database type [redis, psql]")
+	redisAddress := flag.String("redis", "localhost:6379", "Address of redis server")
 
 	// parses the flag.
 	flag.Parse()
 
+	// ticketRepo idebtifies which repository to use.
 	var ticketRepo ticket.Repository
 
+	// choses which db to use as repository.
 	switch *dbType {
 	case "psql":
 		pconn := postgresConnection("postgresql://postgres@localhost/ticket?sslmode=disable")
 		defer pconn.Close()
 		ticketRepo = psql.NewPostgresTicketRepository(pconn)
 	case "redis":
-		rconn := redisConnection("localhost:6379")
+		rconn := redisConnection(*redisAddress)
 		defer rconn.Close()
 		ticketRepo = redisdb.NewRedisTicketRepository(rconn)
 	default:
@@ -41,19 +44,19 @@ func main() {
 	ticketService := ticket.NewService(ticketRepo)
 	ticketHandler := ticket.NewTicketHandler(ticketService)
 
-	/*
-		HTTP ROUTES
-	*/
+	/* HTTP ROUTES */
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/tickets", ticketHandler.GetAll).Methods("GET")
 	router.HandleFunc("/tickets/{id}", ticketHandler.GetByID).Methods("GET")
 	router.HandleFunc("/tickets/delete/{id}", ticketHandler.DeleteByID).Methods("GET")
 	router.HandleFunc("/tickets", ticketHandler.Create).Methods("POST")
 
+	// main handle router
 	http.Handle("/", accessControl(router))
-	/*
-		HTTP ROUTES END
-	*/
+	/* HTTP ROUTES END */
+
+	// register microservice on Consul.
+	registerService()
 
 	errs := make(chan error, 2)
 	go func() {

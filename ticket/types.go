@@ -27,7 +27,7 @@ type Repository interface {
 	FindAll() ([]*Ticket, error)
 }
 
-// Service are the business rules logic.
+// Service is the interface to the business rules logic.
 type Service interface {
 	CreateTicket(ticket *Ticket) (string, error)
 	DeleteTicketByID(id string) error
