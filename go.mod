@@ -7,6 +7,7 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.4
 	github.com/lib/pq v1.3.0
+	github.com/lixiangzhong/dnsutil v0.0.0-20191203032812-75ad39d2945a
 	github.com/onsi/ginkgo v1.12.0 // indirect
 	github.com/onsi/gomega v1.9.0 // indirect
 )

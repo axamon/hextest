@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	"github.com/axamon/hextest/database/psql"
@@ -15,11 +16,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
+var version = "0.1.0"
+
 func main() {
 
 	// dbType is a flag used to choose which backend database to use.
 	dbType := flag.String("database", "redis", "database type [redis, psql]")
 	redisAddress := flag.String("redis", "localhost:6379", "Address of redis server")
+	port := flag.Int("port", 3000, "tcp port to use")
 
 	// parses the flag.
 	flag.Parse()
@@ -56,12 +60,12 @@ func main() {
 	/* HTTP ROUTES END */
 
 	// register microservice on Consul.
-	registerService()
+	registerService("ticket", version, "", *port)
 
 	errs := make(chan error, 2)
 	go func() {
-		fmt.Println("Listening on port :3000")
-		errs <- http.ListenAndServe(":3000", nil)
+		fmt.Println("Listening on port :", *port)
+		errs <- http.ListenAndServe(":"+strconv.Itoa(*port), nil)
 	}()
 	go func() {
 		c := make(chan os.Signal, 1)
