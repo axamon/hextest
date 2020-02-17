@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 const registrationData = `{
@@ -69,7 +70,7 @@ func registerService(id, name, version, address string, port int, deregister, in
 	s.Meta.ServiceVersion = version
 	s.EnableTagOverride = false
 	s.Check.DeregisterCriticalServiceAfter = deregister
-	s.Check.Args = []string{"/usr/local/bin/checkticket"}
+	s.Check.Args = []string{"checkticket", id, strconv.Itoa(port)}
 	s.Check.Interval = interval
 	s.Check.Timeout = timeout
 	s.Weights.Passing = 10

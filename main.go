@@ -3,10 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 
 	"github.com/axamon/hextest/database/psql"
@@ -61,7 +63,9 @@ func main() {
 	/* HTTP ROUTES END */
 	id := uuid.New().String()
 	// register microservice on Consul.
+	version = strings.ReplaceAll(version, ".", "-")
 	registerService(id, "ticket", version, "127.0.0.1", *port, "5m", "30s", "2s")
+	log.Println(id, "ticket", version, "127.0.0.1", *port)
 
 	errs := make(chan error, 2)
 	go func() {
