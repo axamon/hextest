@@ -6,8 +6,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-
-	"github.com/google/uuid"
 )
 
 const registrationData = `{
@@ -59,23 +57,21 @@ type ServiceData struct {
 	} `json:"Weights"`
 }
 
-func registerService(name, version, address string, port int) {
+func registerService(id, name, version, address string, port int, deregister, interval, timeout string) {
 	var s ServiceData
 
-	s.ID = uuid.New().String()
+	s.ID = id
 	s.Name = name
 	s.Port = port
-	if address == "" {
-		address = "127.0.0.1"
-	}
 	s.Address = address
-	s.Tags = []string{"primary", version}
+	// adds in tags the version and the uuid of the microservice to retrieve from DNS.
+	s.Tags = []string{version, id}
 	s.Meta.ServiceVersion = version
 	s.EnableTagOverride = false
-	s.Check.DeregisterCriticalServiceAfter = "10s"
+	s.Check.DeregisterCriticalServiceAfter = deregister
 	s.Check.Args = []string{"/usr/local/bin/checkticket"}
-	s.Check.Interval = "5s"
-	s.Check.Timeout = "2s"
+	s.Check.Interval = interval
+	s.Check.Timeout = timeout
 	s.Weights.Passing = 10
 	s.Weights.Warning = 1
 
