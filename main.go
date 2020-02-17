@@ -19,7 +19,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var version = "0.1.0"
+var version = "0.1.1"
 
 func main() {
 
@@ -53,7 +53,7 @@ func main() {
 
 	/* HTTP ROUTES */
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/tickets", ticketHandler.GetAll).Methods("GET")
+	router.HandleFunc("/tickets/getall", ticketHandler.GetAll).Methods("GET")
 	router.HandleFunc("/tickets/{id}", ticketHandler.GetByID).Methods("GET")
 	router.HandleFunc("/tickets/delete/{id}", ticketHandler.DeleteByID).Methods("GET")
 	router.HandleFunc("/tickets", ticketHandler.Create).Methods("POST")
