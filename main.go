@@ -12,6 +12,7 @@ import (
 	"github.com/axamon/hextest/database/psql"
 	redisdb "github.com/axamon/hextest/database/redis"
 	"github.com/axamon/hextest/ticket"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
@@ -58,9 +59,9 @@ func main() {
 	// main handle router
 	http.Handle("/", accessControl(router))
 	/* HTTP ROUTES END */
-
+	id := uuid.New().String()
 	// register microservice on Consul.
-	registerService("ticket", version, "", *port)
+	registerService(id, "ticket", version, "127.0.0.1", *port, "5m", "30s", "2s")
 
 	errs := make(chan error, 2)
 	go func() {
