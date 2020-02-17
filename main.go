@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"strings"
 	"syscall"
 
@@ -26,7 +25,7 @@ func main() {
 	// dbType is a flag used to choose which backend database to use.
 	dbType := flag.String("database", "redis", "database type [redis, psql]")
 	redisAddress := flag.String("redis", "localhost:6379", "Address of redis server")
-	port := flag.Int("port", 3000, "tcp port to use")
+	port := flag.String("port", ":3000", "tcp port to use")
 
 	// parses the flag.
 	flag.Parse()
@@ -56,12 +55,15 @@ func main() {
 	router.HandleFunc("/tickets/getall", ticketHandler.GetAll).Methods("GET")
 	router.HandleFunc("/tickets/{id}", ticketHandler.GetByID).Methods("GET")
 	router.HandleFunc("/tickets/delete/{id}", ticketHandler.DeleteByID).Methods("GET")
-	router.HandleFunc("/tickets", ticketHandler.Create).Methods("POST")
+	router.HandleFunc("/tickets/new", ticketHandler.Create).Methods("POST")
 
 	// main handle router
 	http.Handle("/", accessControl(router))
 	/* HTTP ROUTES END */
+
+	// Creates unique ticket id.
 	id := uuid.New().String()
+
 	// register microservice on Consul.
 	version = strings.ReplaceAll(version, ".", "-")
 	registerService(id, "ticket", version, "127.0.0.1", *port, "5m", "30s", "2s")
@@ -69,8 +71,8 @@ func main() {
 
 	errs := make(chan error, 2)
 	go func() {
-		fmt.Println("Listening on port :", *port)
-		errs <- http.ListenAndServe(":"+strconv.Itoa(*port), nil)
+		fmt.Println("Listening on port " + *port)
+		errs <- http.ListenAndServe(*port, nil)
 	}()
 	go func() {
 		c := make(chan os.Signal, 1)

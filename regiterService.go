@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 const registrationData = `{
@@ -58,33 +59,46 @@ type ServiceData struct {
 	} `json:"Weights"`
 }
 
-func registerService(id, name, version, address string, port int, deregister, interval, timeout string) {
+func registerService(id, name, version, address, port, deregister, interval, timeout string) {
+
+	// Cleans up the port variable to make it an int.
+	portclean := strings.Replace(port, ":", "", 1)
+	portNum, err := strconv.Atoi(portclean)
+	if err != nil {
+		log.Print(err)
+	}
+
+	// Creates new ServiceData variable.
 	var s ServiceData
 
 	s.ID = id
 	s.Name = name
-	s.Port = port
+	s.Port = portNum
 	s.Address = address
 	// adds in tags the version and the uuid of the microservice to retrieve from DNS.
 	s.Tags = []string{version, id}
 	s.Meta.ServiceVersion = version
 	s.EnableTagOverride = false
 	s.Check.DeregisterCriticalServiceAfter = deregister
-	s.Check.Args = []string{"checkticket", id, strconv.Itoa(port)}
+	s.Check.Args = []string{"checkticket", id, port}
 	s.Check.Interval = interval
 	s.Check.Timeout = timeout
 	s.Weights.Passing = 10
 	s.Weights.Warning = 1
 
-	p, err := json.Marshal(s)
+	// marshal the struct s in the json fields.
+	jsonData, err := json.Marshal(s)
 	if err != nil {
 		log.Println(err)
 	}
 
+	// Creates the payload to send.
+	payload := bytes.NewBuffer(jsonData)
+
+	// Creates an http client.
 	c := &http.Client{}
 
-	payload := bytes.NewBuffer(p) // []byte(registrationData))
-
+	// Creates the http request.
 	registrationURI, err := url.ParseRequestURI("http://127.0.0.1:8500/v1/agent/service/register?replace-existing-checks=true")
 	if err != nil {
 		log.Println(err)
@@ -97,6 +111,8 @@ func registerService(id, name, version, address string, port int, deregister, in
 
 	req.Header.Set("Valid", "*/*")
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	// Executes the http request.
 	_, err = c.Do(req)
 	if err != nil {
 		log.Println(err)

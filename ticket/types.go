@@ -19,7 +19,7 @@ type Ticket struct {
 	Deleted     time.Time `json:"deleted" db:"deleted"`
 }
 
-// Repository is thte inferface to contact to interact with the core.
+// Repository is thte interface to contact to interact with the core.
 type Repository interface {
 	Create(ticket *Ticket) error
 	DeleteByID(id string) error
