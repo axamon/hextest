@@ -12,6 +12,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/axamon/hextest/ticket"
@@ -49,14 +50,14 @@ func main() {
 	// send ticket to microservice
 	c := http.Client{}
 
-	req, err := http.NewRequestWithContext(ctx, "POST", "http://"+addr+"/tickets", payload)
+	req, err := http.NewRequestWithContext(ctx, "POST", "http://"+addr+"/tickets/new", payload)
 	if err != nil {
-		log.Println(err)
+		log.Println("Errore nella creazione request: ", err)
 	}
 
 	resp, err := c.Do(req)
 	if err != nil {
-		log.Println(err)
+		log.Fatal("Errore nella response: ", err)
 	}
 
 	if resp.StatusCode < 299 {
@@ -76,6 +77,7 @@ func findMicroservice(ctx context.Context, service string) string {
 		},
 	}
 
+	// retrievs cname and corresponding adresses.
 	cname, addr, err := r.LookupSRV(ctx, service, "", "service.consul")
 	if err != nil {
 		log.Println(err)
@@ -96,7 +98,10 @@ func findMicroservice(ctx context.Context, service string) string {
 
 func getInfo(s string) string {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter " + s + ":")
-	text, _ := reader.ReadString('\n')
-	return text
+	fmt.Print("Enter " + s + ": ")
+	text, err := reader.ReadString('\n')
+	if err != nil {
+		log.Println(err)
+	}
+	return strings.ReplaceAll(text, "\n", "")
 }

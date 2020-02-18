@@ -18,7 +18,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var version = "0.1.1"
+var version = "0.1.2"
 
 func main() {
 
