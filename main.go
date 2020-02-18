@@ -57,6 +57,7 @@ func main() {
 	router.HandleFunc("/tickets/delete/{id}", ticketHandler.DeleteByID).Methods("GET")
 	router.HandleFunc("/tickets/new", ticketHandler.Create).Methods("POST")
 	router.HandleFunc("/tickets/close/{id}", ticketHandler.CloseByID).Methods("GET")
+	router.HandleFunc("/tickets/status", ticketHandler.Status).Methods("GET")
 
 	// main handle router
 	http.Handle("/", accessControl(router))
@@ -67,7 +68,7 @@ func main() {
 
 	// register microservice on Consul.
 	version = strings.ReplaceAll(version, ".", "-")
-	registerService(id, "ticket", version, "127.0.0.1", *port, "5m", "30s", "2s")
+	registerService(id, "ticket", version, "127.0.0.1", *port, "1m", "30s", "2s")
 	log.Println(id, "ticket", version, "127.0.0.1", *port)
 
 	errs := make(chan error, 2)
