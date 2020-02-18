@@ -11,14 +11,14 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"strconv"
 	"time"
 
 	"github.com/axamon/hextest/ticket"
 )
 
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
+	ctx := context.Background()
 
 	// create tt to send.
 	tt := new(ticket.Ticket)
@@ -32,6 +32,7 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
+	// fmt.Println(jsonData)
 
 	// Creates the payload to send.
 	payload := bytes.NewBuffer(jsonData)
@@ -39,10 +40,16 @@ func main() {
 	// find ticket microsrvice
 	addr := findMicroservice(ctx, "ticket")
 
+	fmt.Println(addr)
+
+	// aggiornamento contesto.
+	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+	defer cancel()
+
 	// send ticket to microservice
 	c := http.Client{}
 
-	req, err := http.NewRequestWithContext(ctx, "POST", "http://"+addr.Target+":"+string(addr.Port)+"/tickets", payload)
+	req, err := http.NewRequestWithContext(ctx, "POST", "http://"+addr+"/tickets", payload)
 	if err != nil {
 		log.Println(err)
 	}
@@ -55,11 +62,11 @@ func main() {
 	if resp.StatusCode < 299 {
 		return
 	}
-	log.Fatal("Something went wrong")
+	log.Fatal("Something went wrong", resp.StatusCode)
 }
 
 // findMicroservice finds the most suitable microservice available.
-func findMicroservice(ctx context.Context, service string) *net.SRV {
+func findMicroservice(ctx context.Context, service string) string {
 	r := net.Resolver{
 		PreferGo: true,
 		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
@@ -69,16 +76,22 @@ func findMicroservice(ctx context.Context, service string) *net.SRV {
 		},
 	}
 
-	_, addr, err := r.LookupSRV(ctx, service, "", "service.consul")
+	cname, addr, err := r.LookupSRV(ctx, service, "", "service.consul")
 	if err != nil {
 		log.Println(err)
 	}
+	ipSlice, err := r.LookupIPAddr(ctx, cname)
+	if err != nil {
+		log.Println(err)
+	}
+	ip := ipSlice[0].IP.String()
 
 	// sorts microservices from better to worst.
 	sort.Slice(addr, func(i, j int) bool { return addr[i].Weight > addr[j].Weight })
 
-	info := addr[0]
-	return info
+	port := strconv.Itoa(int(addr[0].Port))
+
+	return ip + ":" + port
 }
 
 func getInfo(s string) string {
