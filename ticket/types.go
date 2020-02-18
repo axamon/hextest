@@ -25,6 +25,7 @@ type Repository interface {
 	DeleteByID(id string) error
 	FindByID(id string) (*Ticket, error)
 	FindAll() ([]*Ticket, error)
+	CloseByID(id string) (*Ticket, error)
 }
 
 // Service is the interface to the business rules logic.
@@ -32,6 +33,7 @@ type Service interface {
 	CreateTicket(ticket *Ticket) (string, error)
 	DeleteTicketByID(id string) error
 	FindTicketByID(id string) (*Ticket, error)
+	CloseTicketByID(id string) (*Ticket, error)
 	FindAllTickets() ([]*Ticket, error)
 }
 
@@ -46,6 +48,7 @@ type Handler interface {
 	DeleteByID(w http.ResponseWriter, r *http.Request)
 	GetByID(w http.ResponseWriter, r *http.Request)
 	Create(w http.ResponseWriter, r *http.Request)
+	CloseByID(w http.ResponseWriter, r *http.Request)
 }
 
 type handler struct {
