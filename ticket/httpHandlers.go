@@ -15,6 +15,12 @@ func NewTicketHandler(ticketService Service) Handler {
 	}
 }
 
+// Status returns the status.
+func (h *handler) Status(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("ok"))
+}
+
 // GetAll method returns all tickets via http.
 func (h *handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	tickets, _ := h.ticketService.FindAllTickets()

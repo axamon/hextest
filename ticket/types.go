@@ -49,6 +49,7 @@ type Handler interface {
 	GetByID(w http.ResponseWriter, r *http.Request)
 	Create(w http.ResponseWriter, r *http.Request)
 	CloseByID(w http.ResponseWriter, r *http.Request)
+	Status(w http.ResponseWriter, r *http.Request)
 }
 
 type handler struct {
