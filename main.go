@@ -56,6 +56,7 @@ func main() {
 	router.HandleFunc("/tickets/{id}", ticketHandler.GetByID).Methods("GET")
 	router.HandleFunc("/tickets/delete/{id}", ticketHandler.DeleteByID).Methods("GET")
 	router.HandleFunc("/tickets/new", ticketHandler.Create).Methods("POST")
+	router.HandleFunc("/tickets/close/{id}", ticketHandler.CloseByID).Methods("GET")
 
 	// main handle router
 	http.Handle("/", accessControl(router))

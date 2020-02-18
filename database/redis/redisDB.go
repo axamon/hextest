@@ -39,6 +39,33 @@ func (r *ticketRepository) DeleteByID(id string) error {
 	return nil
 }
 
+// CloseByID method changes the status of tt to cloesed.
+func (r *ticketRepository) CloseByID(id string) (*ticket.Ticket, error) {
+	b, err := r.connection.HGet(table, id).Bytes()
+
+	if err != nil {
+		return nil, err
+	}
+
+	t := new(ticket.Ticket)
+	err = json.Unmarshal(b, t)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// cancel old tt version.
+	_ = r.connection.HDel(table, id)
+
+	t.Status = "closed"
+
+	encoded, err := json.Marshal(t)
+
+	_ = r.connection.HSet(table, id, encoded) // Does not expire
+
+	return t, nil
+}
+
 // FindByID method returns the ticket with id passed as argument.
 func (r *ticketRepository) FindByID(id string) (*ticket.Ticket, error) {
 	b, err := r.connection.HGet(table, id).Bytes()

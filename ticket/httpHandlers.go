@@ -54,6 +54,19 @@ func (h *handler) GetByID(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(response)
 }
 
+// CloseByID method closes one ticket by id via http.
+func (h *handler) CloseByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	ticket, _ := h.ticketService.CloseTicketByID(id)
+
+	response, _ := json.Marshal(ticket)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(response)
+}
+
 // Create method creates a new ticket in the repository.
 func (h *handler) Create(w http.ResponseWriter, r *http.Request) {
 	var ticket Ticket

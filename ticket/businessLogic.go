@@ -43,3 +43,8 @@ func (s *service) FindTicketByID(id string) (*Ticket, error) {
 func (s *service) FindAllTickets() ([]*Ticket, error) {
 	return s.repo.FindAll()
 }
+
+// CloseTicketByID method change the status of ticket to closed.
+func (s *service) CloseTicketByID(id string) (*Ticket, error) {
+	return s.repo.CloseByID(id)
+}

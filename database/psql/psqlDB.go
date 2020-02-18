@@ -30,8 +30,7 @@ func (r *ticketRepository) Create(ticket *ticket.Ticket) error {
 
 // DeleteByID method deletes the ticket with id passed as argument.
 func (r *ticketRepository) DeleteByID(id string) error {
-	ticket := new(ticket.Ticket)
-	err := r.db.QueryRow("DELETE FROM tickets where id=$1", id).Scan(&ticket.ID, &ticket.Creator, &ticket.Assigned, &ticket.Title, &ticket.Description, &ticket.Status, &ticket.Points, &ticket.Created, &ticket.Updated)
+	err := r.db.QueryRow("DELETE FROM tickets where id=$1", id)
 	if err != nil {
 		panic(err)
 	}
@@ -42,6 +41,16 @@ func (r *ticketRepository) DeleteByID(id string) error {
 func (r *ticketRepository) FindByID(id string) (*ticket.Ticket, error) {
 	ticket := new(ticket.Ticket)
 	err := r.db.QueryRow("SELECT id, creator, assigned, title, description, status, points, created, updated FROM tickets where id=$1", id).Scan(&ticket.ID, &ticket.Creator, &ticket.Assigned, &ticket.Title, &ticket.Description, &ticket.Status, &ticket.Points, &ticket.Created, &ticket.Updated)
+	if err != nil {
+		panic(err)
+	}
+	return ticket, nil
+}
+
+// CloseByID method returns the ticket with id passed as argument.
+func (r *ticketRepository) CloseByID(id string) (*ticket.Ticket, error) {
+	ticket := new(ticket.Ticket)
+	err := r.db.QueryRow("UPDATE tickets set status = 'closed' where id=$1", id).Scan(&ticket.ID, &ticket.Creator, &ticket.Assigned, &ticket.Title, &ticket.Description, &ticket.Status, &ticket.Points, &ticket.Created, &ticket.Updated)
 	if err != nil {
 		panic(err)
 	}
