@@ -1,4 +1,5 @@
 APPNAME=hextest
+VERSION=0.3.3
 # Go parameters
 GOCMD=go
 GOBUILD=$(GOCMD) build
@@ -9,6 +10,8 @@ GOTOOL=$(GOCMD) tool
 GOPPROF=$(GOTOOL) pprof
 BINARY_NAME=main
 BINARY_UNIX=$(BINARY_NAME)_unix
+
+HOSTPORT=5001
 
 all: test build
 build: 
@@ -21,10 +24,10 @@ profile: test-file
 	./testscan --test.v --test.cpuprofile profili/cpu.pprof
 	$(GOPPROF) --pdf eseguibili/goscanner-linux profili/cpu.pprof > profili/cpu.pdf
 dockerimage: test
-	CGO_ENABLED=0 $(GOBUILD) -ldflags="-w -s" -a -installsuffix cgo -o main
-	podman build -t $(APPNAME):latest -f Dockerfile
+	CGO_ENABLED=0 $(GOBUILD) -ldflags="-w -s" -a -installsuffix cgo -o main -v
+	podman build -t $(APPNAME):$(VERSION) -f Dockerfile
 dockerrun:
-	podman run --rm -d -it --name $(APPNAME) -p 5001:3000 $(APPNAME):latest -redis 192.168.1.2:6379
+	podman run --rm -d -it --name $(APPNAME)_$(HOSTPORT) -p $(HOSTPORT):3000 $(APPNAME):$(VERSION) -redis 192.168.1.2:6379
 clean: 
 	$(GOCLEAN)
 	rm -f $(BINARY_NAME)
