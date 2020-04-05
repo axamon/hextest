@@ -18,7 +18,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var version = "0.1.2"
+// Version is embedded in built via -ldflgs
+var Version = "development"
 
 func main() {
 
@@ -26,9 +27,18 @@ func main() {
 	dbType := flag.String("database", "redis", "database type [redis, psql]")
 	redisAddress := flag.String("redis", "localhost:6379", "Address of redis server")
 	port := flag.String("port", ":3000", "tcp port to use")
+	ver := flag.Bool("v", false, "Version of hextest")
 
 	// parses the flag.
 	flag.Parse()
+
+	if *ver {
+		fmt.Printf("Version: %s\n", Version)
+		os.Exit(0)
+	}
+
+	// Sets version on ticket package.
+	ticket.Version = Version
 
 	// ticketRepo idebtifies which repository to use.
 	var ticketRepo ticket.Repository
@@ -67,7 +77,7 @@ func main() {
 	id := uuid.New().String()
 
 	// register microservice on Consul.
-	version = strings.ReplaceAll(version, ".", "-")
+	version := strings.ReplaceAll(Version, ".", "-")
 	registerService(id, "ticket", version, "127.0.0.1", *port, "1m", "30s", "2s")
 	log.Println(id, "ticket", version, "127.0.0.1", *port)
 

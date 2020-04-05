@@ -8,6 +8,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var Version string
+
 // NewTicketHandler handles creations of new tickets via http.
 func NewTicketHandler(ticketService Service) Handler {
 	return &handler{
@@ -57,6 +59,7 @@ func (h *handler) GetByID(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("Served by hextest version: " + Version + "\n"))
 	_, _ = w.Write(response)
 }
 
